@@ -1,0 +1,280 @@
+I'd be happy to guide you through setting up a Docker configuration for an application stack using Angular, Strapi, and PostgreSQL. Here's a step-by-step process:
+
+
+
+1. Create a new directory for your project:
+```bash
+mkdir angular-strapi-postgres-docker
+cd angular-strapi-postgres-docker
+```
+
+2. Create a `docker-compose.yml` file:
+
+```yaml
+version: '3'
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "1337:1337"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    environment:
+      DATABASE_CLIENT: postgres
+      DATABASE_NAME: strapi
+      DATABASE_HOST: db
+      DATABASE_PORT: 5432
+      DATABASE_USERNAME: strapi
+      DATABASE_PASSWORD: strapi_password
+    depends_on:
+      - db
+
+  db:
+    image: postgres:13
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: strapi
+      POSTGRES_USER: strapi
+      POSTGRES_PASSWORD: strapi_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
+
+```
+
+3. Create directories for the frontend and backend:
+```bash
+mkdir frontend backend
+```
+
+4. In the `frontend` directory, create a `Dockerfile`:
+
+
+
+```dockerfile
+version: '3'
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "1337:1337"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    environment:
+      DATABASE_CLIENT: postgres
+      DATABASE_NAME: strapi
+      DATABASE_HOST: db
+      DATABASE_PORT: 5432
+      DATABASE_USERNAME: strapi
+      DATABASE_PASSWORD: strapi_password
+    depends_on:
+      - db
+
+  db:
+    image: postgres:13
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: strapi
+      POSTGRES_USER: strapi
+      POSTGRES_PASSWORD: strapi_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
+
+# Frontend Dockerfile
+# Use an official Node runtime as the base image
+FROM node:14
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy package.json and package-lock.json to the working directory
+COPY package*.json ./
+
+# Install Angular CLI globally
+RUN npm install -g @angular/cli
+
+# Install app dependencies
+RUN npm install
+
+# Copy the rest of the application code
+COPY . .
+
+# Expose port 4200 for the development server
+EXPOSE 4200
+
+# Start the Angular development server
+CMD ["ng", "serve", "--host", "0.0.0.0"]
+
+```
+
+5. In the `backend` directory, create a `Dockerfile`:
+
+
+
+```dockerfile
+version: '3'
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "1337:1337"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    environment:
+      DATABASE_CLIENT: postgres
+      DATABASE_NAME: strapi
+      DATABASE_HOST: db
+      DATABASE_PORT: 5432
+      DATABASE_USERNAME: strapi
+      DATABASE_PASSWORD: strapi_password
+    depends_on:
+      - db
+
+  db:
+    image: postgres:13
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: strapi
+      POSTGRES_USER: strapi
+      POSTGRES_PASSWORD: strapi_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
+
+# Frontend Dockerfile
+# Use an official Node runtime as the base image
+FROM node:14
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy package.json and package-lock.json to the working directory
+COPY package*.json ./
+
+# Install Angular CLI globally
+RUN npm install -g @angular/cli
+
+# Install app dependencies
+RUN npm install
+
+# Copy the rest of the application code
+COPY . .
+
+# Expose port 4200 for the development server
+EXPOSE 4200
+
+# Start the Angular development server
+CMD ["ng", "serve", "--host", "0.0.0.0"]
+
+# Backend Dockerfile
+# Use an official Node runtime as the base image
+FROM node:14
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy package.json and package-lock.json to the working directory
+COPY package*.json ./
+
+# Install app dependencies
+RUN npm install
+
+# Copy the rest of the application code
+COPY . .
+
+# Expose port 1337 for Strapi
+EXPOSE 1337
+
+# Start Strapi in development mode
+CMD ["npm", "run", "develop"]
+
+```
+
+6. Initialize your Angular project in the `frontend` directory:
+```bash
+cd frontend
+ng new angular-app --directory=.
+cd ..
+```
+
+7. Initialize your Strapi project in the `backend` directory:
+```bash
+cd backend
+npx create-strapi-app . --quickstart
+cd ..
+```
+
+8. Update the Strapi configuration to use PostgreSQL:
+   Edit `backend/config/database.js` to use the PostgreSQL connection details.
+
+9. Build and run your Docker containers:
+```bash
+docker-compose up --build
+```
+
+This setup will create three containers:
+- An Angular frontend running on `http://localhost:4200`
+- A Strapi backend running on `http://localhost:1337`
+- A PostgreSQL database
+
+The containers are linked, and the frontend can communicate with the backend, which in turn can communicate with the database.
+
+Would you like me to explain any part of this setup in more detail?
