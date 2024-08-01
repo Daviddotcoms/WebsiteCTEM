@@ -11,14 +11,11 @@ import { StrapiService } from './services/strapi.service';
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
-export class AppComponent implements OnInit{
+export class AppComponent{
   title = 'websiteAngular';
   constructor(private service: StrapiService){}
   testimonials!: Testimonials
 
-  ngOnInit(): void {
-    this.loadTestimonials()
-  }
 
   loadTestimonials(){
     this.service.getTestimonials().subscribe((data: any) => this.testimonials = data.data[0].attributes)

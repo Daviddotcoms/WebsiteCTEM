@@ -4,7 +4,7 @@ version: '3'
 services:
   frontend:
     build:
-      context: ./websiteAngular
+      context: ./websiteTest/websiteAngular
       dockerfile: Dockerfile
     ports:
       - "4200:4200"

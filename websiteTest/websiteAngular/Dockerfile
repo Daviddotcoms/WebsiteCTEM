@@ -1,9 +1,9 @@
 
-FROM node:14
+FROM node:20-alpine
 
 WORKDIR /app
 COPY package*.json ./
-RUN npm install -g @angular/cli
+RUN npm install -g @angular/cli@17.0.0
 RUN npm install
 COPY . .
 EXPOSE 4200
